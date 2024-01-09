@@ -1,20 +1,23 @@
 import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { DarkContext } from "./contextStore/DarkModeProvider";
 
 import Error from "./Error";
 import Nav from "./Nav";
 import Countries from "./Countries";
 import CountryDetails from "./CountryDetails";
 import classes from "./App.module.css";
+import Region from "./Region";
 
 function App() {
   const navigate = useNavigate();
 
-  // const [isDark, setIsDark] = useState(true);
-  const [isDark, setIsDark] = useState(false);
+  const darkCtx = useContext(DarkContext);
+  const [loading, setLoading] = useState(false);
   const [allCountries, setAllCountries] = useState([]);
   const [countryDetail, setCountryDetail] = useState({});
   const [region, setRegion] = useState("All");
@@ -34,14 +37,12 @@ function App() {
 
     setAllCountries(() => data);
     setRegion(() => "All");
-    // console.log(data.slice(0, 5));
   };
 
   const getCountryByName = async (country) => {
     const res = await fetch(`https://restcountries.com/v3.1/name/${country}`);
-
+    console.log(country);
     if (!res.ok) {
-      // console.log(country);
       navigate("*");
       return;
     }
@@ -102,17 +103,15 @@ function App() {
   };
 
   return (
-    <div className={`${classes.section} ${isDark ? classes["dark"] : ""}`}>
-      <Nav isDark={isDark} setIsDark={setIsDark} />
+    <div className={`${classes.section} ${darkCtx.isDark ? classes["dark"] : ""}`}>
+      <Nav />
       <div className="container">
         <Routes>
-          <Route path="*" element={<Error isDark={isDark} />}></Route>
-          <Route
+          <Route path="*" element={<Error />}></Route>
+          {/* <Route
             path="/"
             element={
               <Countries
-                isDark={isDark}
-                setIsDark={setIsDark}
                 region={region}
                 setRegion={setRegion}
                 allCountries={allCountries}
@@ -127,15 +126,17 @@ function App() {
             path="/country-details"
             element={
               <CountryDetails
-                isDark={isDark}
-                setIsDark={setIsDark}
                 countryDetail={countryDetail}
                 setCountryDetail={setCountryDetail}
                 getCountryByName={getCountryByName}
                 getCountryByCode={getCountryByCode}
               />
             }
-          ></Route>
+          ></Route> */}
+          <Route path="/" element={<Countries countries={allCountries} />} />
+          <Route path="/countryName/:name" element={<CountryDetails />} />
+          <Route path="/countryCode/:code" element={<CountryDetails />} />
+          <Route path="/region/:id" element={<Region />} />
         </Routes>
       </div>
     </div>

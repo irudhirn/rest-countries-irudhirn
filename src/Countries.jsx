@@ -1,27 +1,24 @@
 import React from "react";
-import { useState } from "react";
-import { useEffect } from "react";
-
+import { useContext } from "react";
+import { DarkContext } from "./contextStore/DarkModeProvider";
 import Header from "./Header";
 import Country from "./Country";
 import classes from "./Countries.module.css";
 
 const Countries = ({
-  isDark,
-  setIsDark,
   region,
   setRegion,
-  allCountries,
+  countries,
   getAllCountries,
   getCountryByName,
   getCountryByRegion,
   setCountryDetail,
 }) => {
+  const darkCtx = useContext(DarkContext);
+
   return (
     <>
       <Header
-        isDark={isDark}
-        setIsDark={setIsDark}
         region={region}
         setRegion={setRegion}
         getAllCountries={getAllCountries}
@@ -29,20 +26,18 @@ const Countries = ({
         getCountryByRegion={getCountryByRegion}
       />
       <div className={classes.countries}>
-        {!allCountries.length && (
+        {!countries?.length && (
           <img
             src="https://c.tenor.com/I6kN-6X7nhAAAAAj/loading-buffering.gif"
             alt="spinner"
             className={classes.spinner}
           />
         )}
-        {allCountries.length !== 0 &&
-          allCountries.map((country, i) => {
+        {countries?.length !== 0 &&
+          countries?.map((country, i) => {
             return (
               <Country
                 key={i}
-                isDark={isDark}
-                setIsDark={setIsDark}
                 country={country}
                 setCountryDetail={setCountryDetail}
                 getCountryByName={getCountryByName}

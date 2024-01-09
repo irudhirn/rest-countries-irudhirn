@@ -1,38 +1,37 @@
 import React from "react";
-
-import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { DarkContext } from "./contextStore/DarkModeProvider";
 
 import classes from "./Country.module.css";
+import { Link } from "react-router-dom";
 
-const Country = ({ isDark, country, setCountryDetail, getCountryByName }) => {
+const Country = ({ country, getCountryByName }) => {
+  const darkCtx = useContext(DarkContext);
   const { name, flags, population, region, capital } = country;
 
   const style = flags ? { backgroundImage: `url('${flags.png}')` } : {};
 
   return (
-    // <Link to="/country-details" style={{ display: "inline-flex" }}>
-    <div
-      className={`${classes["country"]} ${isDark ? classes.dark : ""}`}
-      onClick={() => {
-        // setCountryDetail(() => country);
-        getCountryByName(name.common.toLowerCase());
-      }}
-    >
-      <div className={classes["country__flag"]} style={style}></div>
-      <div className={classes["country__overview"]}>
-        <h2 className={classes["country__overview--name"]}>{name.common}</h2>
-        <p className={classes["country__overview--population"]}>
-          <span>Population</span>: {population}
-        </p>
-        <p className={classes["country__overview--region"]}>
-          <span>Region</span>: {region}
-        </p>
-        <p className={classes["country__overview--capital"]}>
-          <span>Capital</span>: {capital}
-        </p>
+    <Link to={`/countryName/${name.common.toLowerCase().split(" ").join("-")}`}>
+      <div
+        className={`${classes["country"]} ${darkCtx.isDark ? classes.dark : ""}`}
+        // onClick={() => getCountryByName(name.common.toLowerCase())}
+      >
+        <div className={classes["country__flag"]} style={style}></div>
+        <div className={classes["country__overview"]}>
+          <h2 className={classes["country__overview--name"]}>{name.common}</h2>
+          <p className={classes["country__overview--population"]}>
+            <span>Population</span>: {population}
+          </p>
+          <p className={classes["country__overview--region"]}>
+            <span>Region</span>: {region}
+          </p>
+          <p className={classes["country__overview--capital"]}>
+            <span>Capital</span>: {capital}
+          </p>
+        </div>
       </div>
-    </div>
-    // </Link>
+    </Link>
   );
 };
 

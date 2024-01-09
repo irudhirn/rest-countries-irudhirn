@@ -1,24 +1,29 @@
 import React from "react";
 import { useState } from "react";
 import { useEffect } from "react";
+import { useContext } from "react";
+import { Link, useNavigate } from "react-router-dom";
 
-import { useNavigate } from "react-router-dom";
+import { DarkContext } from "./contextStore/DarkModeProvider";
+import { RegionContext } from "./contextStore/RegionProvider";
 
 import classes from "./Header.module.css";
 
 const Header = ({
-  isDark,
-  setIsDark,
-  region,
-  setRegion,
+  // region,
   getAllCountries,
   getCountryByName,
   getCountryByRegion,
 }) => {
-  // const navigate = useNavigate();
-  const [cityVal, setCityVal] = useState("");
+  const navigate = useNavigate();
+
+  const darkCtx = useContext(DarkContext);
+  const regionCtx = useContext(RegionContext);
+  
+  const [countryName, setCountryName] = useState("");
   const [isRegionActive, setIsRegionActive] = useState(false);
   const [regionText, setRegionText] = useState("Filter by Region");
+  const [region, setRegion] = useState("All");
 
   useEffect(() => {
     if (region === "All") setRegionText(() => "Filter by Region");
@@ -28,18 +33,20 @@ const Header = ({
   const submitHandler = (e) => {
     e.preventDefault();
 
-    if (cityVal === "") return;
+    if (countryName === "") return;
 
-    getCountryByName(cityVal.trim());
+    navigate("/countryName/" + countryName);
+
+    // getCountryByName(countryName.trim());
     // setTimeout(() => navigate("/country-details"), 100);
   };
 
   return (
-    <header className={`${classes.header} ${isDark ? classes.dark : ""}`}>
+    <header className={`${classes.header} ${darkCtx.isDark ? classes.dark : ""}`}>
       <form className={classes.formEl} onSubmit={submitHandler}>
         <div
           className={`${classes["search__input"]} ${
-            isDark ? classes.dark : ""
+            darkCtx.isDark ? classes.dark : ""
           }`}
         >
           <span className={classes["search__input--search"]}>
@@ -49,81 +56,46 @@ const Header = ({
             type="text"
             className={classes.inputEl}
             placeholder="Search for a country..."
-            value={cityVal}
-            onChange={(e) => setCityVal(() => e.target.value)}
+            value={countryName}
+            onChange={(e) => setCountryName(e.target.value)}
           />
         </div>
-        <div
-          className={`${classes["filter__input"]} ${
-            isDark ? classes.dark : ""
-          }`}
-        >
-          <div
-            className={classes["filter__by__region"]}
-            onClick={() => setIsRegionActive((prev) => !prev)}
-          >
-            {regionText}
+        <div className={`${classes["filter__input"]} ${darkCtx.isDark ? classes.dark : ""}`}>
+          <div className={classes["filter__by__region"]} onClick={() => setIsRegionActive((prev) => !prev)}>
+            {/* {regionText} */}
+            {regionText === "All" ? "Filter by Region" : regionText}
           </div>
-          <div
-            className={`${classes.regions} ${
-              isRegionActive ? classes.active : ""
-            }`}
-            onClick={() => setIsRegionActive(() => false)}
-          >
-            <p
-              className={classes.region}
-              onClick={() => {
-                getAllCountries("all");
-                setRegionText(() => "Filter by Region");
-              }}
-            >
-              All
-            </p>
-            <p
-              className={classes.region}
-              onClick={() => {
-                getCountryByRegion("Africa");
-                setRegionText(() => "Africa");
-              }}
-            >
-              Africa
-            </p>
-            <p
-              className={classes.region}
-              onClick={() => {
-                getCountryByRegion("Americas");
-                setRegionText(() => "America");
-              }}
-            >
-              America
-            </p>
-            <p
-              className={classes.region}
-              onClick={() => {
-                getCountryByRegion("Asia");
-                setRegionText(() => "Asia");
-              }}
-            >
-              Asia
-            </p>
-            <p
-              className={classes.region}
-              onClick={() => {
-                getCountryByRegion("Europe");
-                setRegionText(() => "Europe");
-              }}
-            >
-              Europe
-            </p>
-            <p
-              className={classes.region}
-              onClick={() => {
-                getCountryByRegion("Oceania");
-                setRegionText(() => "Oceania");
-              }}
-            >
-              Oceania
-            </p>
+          <div className={`${classes.regions} ${isRegionActive ? classes.active : ""}`} onClick={() => setIsRegionActive(() => false)}>
+            <Link to="/" style={{color: "inherit"}} onClick={() => { setRegionText(() => "All"); }}>
+              <p className={classes.region}>
+                All
+              </p>
+            </Link>
+            <Link to="/region/Africa" style={{color: "inherit"}} onClick={() => { setRegionText(() => "Africa"); }}>
+              <p className={classes.region}>
+                Africa
+              </p>
+            </Link>
+            <Link to="/region/Americas" style={{color: "inherit"}} onClick={() => { setRegionText(() => "America"); }}>
+              <p className={classes.region}>
+                America
+              </p>
+            </Link>
+            <Link to="/region/Asia" style={{color: "inherit"}} onClick={() => { setRegionText(() => "Asia"); }}>
+              <p className={classes.region}>
+                Asia
+              </p>
+            </Link>
+            <Link to="/region/Europe" style={{color: "inherit"}} onClick={() => { setRegionText(() => "Europe"); }}>
+              <p className={classes.region}>
+                Europe
+              </p>
+            </Link>
+            <Link to="/region/Oceania" style={{color: "inherit"}} onClick={() => { setRegionText(() => "Oceania"); }}>
+              <p className={classes.region}>
+                Oceania
+              </p>
+            </Link>
           </div>
         </div>
       </form>
